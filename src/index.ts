@@ -2,19 +2,16 @@ import mongoose from "mongoose";
 import express, { Request, Response } from "express";
 import cors from "cors";
 
-const app = express();
+export const app = express();
 app.use(cors());
 app.use(express.json());
 const port = 4000;
 
 // Connect to MongoDB
-mongoose
+export const Connection = mongoose
   .connect("mongodb://localhost:27017/MovieStore")
   .then(() => {
     console.log("Connection has been made...");
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
   })
   .catch((error) => {
     console.log("Connection error:", error);
@@ -55,7 +52,6 @@ const movieSchema = new mongoose.Schema<IMovie>(
 
 const MovieModel = mongoose.model<IMovie>("Movies", movieSchema, "movies");
 
-
 app.post("/createMovie", async (req: Request, res: Response) => {
   try {
     const { title, release_date, description, image_url } = req.body;
@@ -69,11 +65,10 @@ app.post("/createMovie", async (req: Request, res: Response) => {
     await newMovie.save();
     res.status(201).json({ status: "true" });
   } catch (error) {
-      res.status(409).json({
-        status: "false",
-        error: "A movie with this title already exists.",
-      });
-   
+    res.status(409).json({
+      status: "false",
+      error: "A movie with this title already exists.",
+    });
   }
 });
 
@@ -135,3 +130,14 @@ app.put("/update/:id", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// Export a function to start the server
+export function startServer(port: number) {
+  return app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+if (require.main === module) {
+  startServer(port);
+}
