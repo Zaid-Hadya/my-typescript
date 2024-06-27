@@ -50,7 +50,7 @@ const movieSchema = new mongoose.Schema<IMovie>(
   }
 );
 
-const MovieModel = mongoose.model<IMovie>("Movies", movieSchema, "movies");
+export const MovieModel = mongoose.model<IMovie>("Movies", movieSchema, "movies");
 
 app.post("/createMovie", async (req: Request, res: Response) => {
   try {
